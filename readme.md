@@ -1,55 +1,61 @@
-# Graphes en Python
+ 
 
-## Description
+# **Devoir INF212 : Graphes en Python**  
 
-Ce projet implémente une structure de données de **graphe non orienté** à l'aide d'une matrice d'adjacence. L'objectif est de permettre à l'utilisateur de créer un graphe, d'ajouter des arêtes entre des sommets, et d'obtenir diverses informations sur le graphe, telles que les degrés des sommets, ainsi que de visualiser le graphe sous forme graphique ou matricielle.
+## **Description**  
 
-## Logique de Manipulation des Graphes
+Ce projet implémente une structure de **graphe non orienté** à l'aide d'une **matrice d'adjacence**. Il permet d'ajouter des arêtes entre des sommets, de déterminer les sommets ayant le **degré minimum et maximum**, et de visualiser le graphe sous forme **graphique** ou **matricielle**.  
 
-### 1. **Représentation du Graphe avec une Matrice d'Adjacence**
+## **Fonctionnalités**  
 
-Le graphe est **représenté à l'aide d'une matrice d'adjacence**. Une matrice d'adjacence est une matrice carrée où chaque ligne et chaque colonne correspond à un sommet du graphe. Si une arête existe entre les sommets `u` et `v`, la valeur à la position `matrix[u][v]` est différente de zéro (par défaut `1` dans ce projet). Comme le graphe est **non orienté**, une arête entre `u` et `v` implique également que `matrix[v][u]` est égal à `1`.
+1. **Création d'un graphe** basé sur une matrice d'adjacence.
+2. **Ajout d'arêtes** entre les sommets via un menu interactif.
+3. **Détermination des sommets ayant le degré minimum et maximum**.
+4. **Affichage du graphe** sous deux formes :
+   - **Graphique** avec `networkx` et `matplotlib`.
+   - **Matrice d'adjacence** affichée dans la console.
+5. **Interface utilisateur interactive** avec un menu permettant d'interagir avec le graphe.
 
-### 2. **Ajout d'Arêtes**
 
-Lors de l'ajout d'une arête entre deux sommets `u` et `v`, la fonction `add_edge()` met à jour la matrice d'adjacence aux positions appropriées. Pour un graphe non orienté, l'arête est ajoutée à la fois à `matrix[u][v]` et `matrix[v][u]`.
+## **1. Représentation du Graphe**  
+
+Le graphe est représenté sous forme d'une **matrice d'adjacence** où :  
+- `matrix[u][v] = 1` signifie qu'il existe une arête entre les sommets `u` et `v`.  
+- Puisque le graphe est **non orienté**, nous avons aussi `matrix[v][u] = 1`.  
+
+
+
+## **2. Ajout d'Arêtes**  
+
+L'utilisateur peut **ajouter des arêtes** via le menu interactif en répondant `1` (oui) ou `0` (non) lorsqu'on lui demande si deux sommets sont adjacents.
+
+---
+
+## **3. Détermination des Sommets de Degré Minimum et Maximum**  
+
+Le **degré d'un sommet** correspond au nombre d'arêtes qui lui sont connectées.  
+Nous **déterminons les sommets ayant le degré minimum et maximum** avec :
 
 ```python
-def add_edge(self, u, v, weight=1):
-    self.matrix[u][v] = weight
-    self.matrix[v][u] = weight
+sums = [sum(row) for row in g.matrix]
+min_deg_vertex, max_deg_vertex = sums.index(min(sums)), sums.index(max(sums))
+print(f'Sommet avec degré minimum : {min_deg_vertex}, Sommet avec degré maximum : {max_deg_vertex}')
 ```
 
-Cela garantit que la relation entre les sommets est symétrique, ce qui est caractéristique d'un graphe non orienté.
 
-### 3. **Calcul des Degrés des Sommets**
+## **4. Visualisation du Graphe**  
 
-Un **degré** d'un sommet est défini comme le nombre d'arêtes qui y sont connectées. Pour calculer les degrés minimum et maximum dans le graphe, nous parcourons chaque ligne de la matrice d'adjacence et calculons la somme des éléments dans chaque ligne. Cette somme représente le degré d'un sommet donné.
+Le graphe peut être affiché sous deux formes :  
 
-```python
-min_deg = min(sum(row) for row in self.matrix)
-max_deg = max(sum(row) for row in self.matrix)
-```
+### **A. Représentation Graphique avec `networkx`**  
 
-Cette logique permet de calculer efficacement les degrés des sommets et de trouver le **degré minimum et maximum** dans le graphe.
-
-### 4. **Visualisation du Graphe**
-
-Le projet permet de visualiser le graphe sous deux formes :
-
-- **Représentation graphique** : Utilisation de `networkx` et `matplotlib` pour afficher le graphe de manière visuelle. Les arêtes sont tracées entre les sommets, et les sommets sont étiquetés pour permettre une identification facile.
-  
-- **Représentation matricielle** : Affichage de la matrice d'adjacence sous forme de tableau dans la console, permettant à l'utilisateur de voir les connexions entre les sommets sous une forme plus brute.
-
-Voici comment la logique fonctionne pour la visualisation graphique :
-  
-1. **Extraire les arêtes** : Nous parcourons la matrice d'adjacence et extrayons les paires de sommets qui sont connectés par une arête (c'est-à-dire lorsque la valeur dans la matrice est différente de zéro).
+1. Extraction des arêtes depuis la matrice d'adjacence :
   
 ```python
-edges = [(i, j) for i in range(self.size) for j in range(i + 1, self.size) if self.matrix[i][j] > 0]
+edges = [(i, j) for i in range(g.size) for j in range(i+1, g.size) if g.matrix[i][j] > 0]
 ```
 
-2. **Affichage avec `networkx`** : Les arêtes extraites sont ajoutées à un objet `Graph` de `networkx`, qui génère ensuite le graphe et l'affiche.
+2. Affichage avec `networkx` et `matplotlib` :
 
 ```python
 import networkx as nx
@@ -61,30 +67,97 @@ nx.draw(G, with_labels=True, node_color='lightblue', edge_color='black', node_si
 plt.show()
 ```
 
-### 5. **Interface Utilisateur (Menu Interactif)**
 
-L'utilisateur interagit avec le programme via un **menu interactif** qui permet :
+### **B. Représentation sous forme de Matrice**  
 
-1. D'ajouter des arêtes au graphe en précisant si deux sommets sont adjacents.
-2. D'obtenir les degrés minimum et maximum des sommets.
-3. De visualiser le graphe soit sous forme graphique soit sous forme de matrice d'adjacence.
-4. De quitter l'application.
+Affichage direct dans la console :
 
-Chaque option du menu est implémentée dans une fonction distincte, et l'utilisateur peut effectuer plusieurs actions avant de quitter.
+```python
+def display(self):
+    for row in self.matrix:
+        print(row)
+```
+
+
+## **5. Trace de l'Algorithme**  
+
+Une **trace d'algorithme** est une représentation détaillée de l'exécution du programme étape par étape. Elle permet de **comprendre le fonctionnement** et de **déboguer le code**.
+
+### **A. Trace Manuelle**
+On suit l'évolution des variables dans un tableau.
+
+#### **Exemple : Ajout d'une arête entre deux sommets**  
+
+Si nous avons un graphe avec 4 sommets (`0, 1, 2, 3`) et ajoutons une arête entre `0` et `2`, la trace pourrait être :
+
+| Étape | Sommet `u` | Sommet `v` | Matrice d'adjacence mise à jour |
+|-------|-----------|-----------|--------------------------------|
+| 1     | 0         | 2         | `matrix[0][2] = 1` et `matrix[2][0] = 1` |
+| 2     | 1         | 3         | `matrix[1][3] = 1` et `matrix[3][1] = 1` |
+
+
+### **B. Trace avec Affichage `print()`**
+On peut ajouter des `print()` dans le code pour suivre son exécution.
+
+#### **Exemple en Python :**
+```python
+def add_edge(self, u, v, weight=1):
+    print(f"Ajout d'une arête entre {u} et {v}")
+    self.matrix[u][v] = weight
+    self.matrix[v][u] = weight
+    print(f"Matrice mise à jour : {self.matrix}")
+```
+
+Sortie lors de l'exécution :
+```
+Ajout d'une arête entre 0 et 2
+Matrice mise à jour : [[0, 0, 1, 0], [0, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 0]]
+```
+
+### **C. Trace avec un Débogueur (`pdb`)**
+On peut utiliser **`pdb`** pour exécuter le programme ligne par ligne et observer les variables.
+
+```python
+import pdb
+
+def add_edge(self, u, v, weight=1):
+    pdb.set_trace()  # Mettre un point d'arrêt
+    self.matrix[u][v] = weight
+    self.matrix[v][u] = weight
+```
+
+Lors de l'exécution, on peut utiliser :
+- `n` pour exécuter l'instruction suivante.
+- `p self.matrix` pour voir l'état actuel de la matrice.
+
+
+## **6. Installation Automatique des Dépendances**  
+
+Avant l'exécution, le programme vérifie et installe automatiquement les bibliothèques **`networkx`** et **`matplotlib`** si elles ne sont pas présentes.  
 
 ---
 
-## Dépendances
+## **7. Lancement du Programme**  
 
-Le projet utilise les bibliothèques suivantes pour fonctionner :
+Lancer le programme avec :  
 
-- **`networkx`** : Pour la création et la manipulation de graphes.
-- **`matplotlib`** : Pour la visualisation graphique du graphe.
-- **`numpy`** : Pour la manipulation de tableaux et matrices.
+```python
+def main():
+    size = int(input('Enter the number of vertices: '))
+    g = Graph(size)
+    menu(g)
 
-## Fonctionnalités à venir
+install_missing_packages()
+main()
+```
 
-- **Ajout d'autres algorithmes de graphes** : Recherche de chemin, algorithmes de traversal, etc.
-- **Support des graphes dirigés** : Actuellement, le projet ne prend en charge que les graphes non orientés, mais des extensions pourraient être ajoutées pour inclure des graphes dirigés.
 
- 
+## **8. Fonctionnalités Futures**  
+
+- Ajout d'algorithmes comme **BFS**, **DFS** et **Dijkstra**.
+- Support des **graphes dirigés**.
+
+
+
+### **📌 Note :**  
+Ce README est **totalement aligné** avec le code `main.py`, et il inclut une nouvelle section expliquant comment **tracer l'algorithme** pour mieux comprendre son fonctionnement et le déboguer. 🚀

@@ -25,13 +25,13 @@ def menu(g):
         global flag
         print('                          Menu                      ')
         print('1.) Add edge........................................')
-        print('2.) Minimun and Maximun degree......................')
+        print('2.) vertex minimun and maximun degree......................')
         print('3.) Visualize.......................................')
         print('4.) Quit ...........................................')
         choice = int(input('Answer: '))
         if choice == 1:
-            for i in range(size):
-                for j in range(size):
+            for i in range(g.size):
+                for j in range(g.size):
                     n = int(input(f'Do vertices {i} and {j} are adjacents? 1/0 '))
                     if n == 1:
                         g.add_edge(i,j)
@@ -45,9 +45,12 @@ def menu(g):
                         n = int(input(f'Do vertices {i} and {j} are adjacents? 1/0 '))
                         if n == 1:
                             g.add_edge(i,j)
-            min_deg = min(sum(ligne) for ligne in g.matrix)
-            max_deg = max(sum(ligne) for ligne in g.matrix)
-            print(f'Min degree = {min_deg} and Max degree = {max_deg}')
+            sums = [sum(ligne) for ligne in g.matrix]
+            min_sum = min(sums)
+            max_sum = max(sums)
+            min_deg = sums.index(min_sum)
+            max_deg = sums.index(max_sum)
+            print(f'vertex with Min degree is vertex ({min_deg}) and vertex with max degree is ({max_deg})')
             input('press any key to continue')
         elif choice == 3:
             clear_screen()
@@ -57,7 +60,6 @@ def menu(g):
             if c == 1:
                 import networkx as nx
                 import matplotlib.pyplot as plt
-                import numpy as np
                 G = nx.Graph()
                 edges = [(i, j) for i in range(g.size) for j in range(i+1, g.size) if g.matrix[i][j] > 0]
                 G.add_edges_from(edges)
@@ -80,11 +82,11 @@ def main():
     size = int(input('please enter the number of verges: '))
     g = Graph(size)
     menu(g)
-import sys
-import subprocess
-import pkg_resources
 
 def install_missing_packages():
+    import sys
+    import subprocess
+    import pkg_resources
     installed_packages = {pkg.key for pkg in pkg_resources.working_set}
     missing_packages = [pkg for pkg in dependencies if pkg not in installed_packages]
 
@@ -96,8 +98,7 @@ def install_missing_packages():
         except Exception as e:
             print(f"Error in installing dependencies : {e}")
             sys.exit(1)
-dependencies = [
-    "numpy", 
+dependencies = [ 
     "matplotlib",
     "networkx"
 ]
