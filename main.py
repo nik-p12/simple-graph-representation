@@ -13,8 +13,53 @@ class Graph:
         for row in self.matrix:
             print(row)
 
+def dfs(g, u, v, path, visited):
+    visited[u] = True 
+    path.append(u)
+    if u == v:
+        return True
+    for i in range(len(g.matrix[u])):
+        if g.matrix[u][i] == 1 and not visited[i]:
+            if dfs(g, i, v, path, visited):
+                return True
+    path.pop()
+    visited[u] = False
+
+def dfs_elementary_matrix(h, current, target, path):
+    if current == target: 
+        return True
+    for neighbor in range(len(h.matrix[current])):
+        if h.matrix[current][neighbor] > 0:
+            h.matrix[current][neighbor] -=1
+            h.matrix[neighbor][current] -=1
+            path.append(neighbor)
+            if dfs_elementary_matrix(h, neighbor, target, path):
+                return True
+        h.matrix[current][neighbor] +=1
+        h.matrix[neighbor][current] +=1
+        path.pop()
+    return False
+
+def exists_chain(g, u, v):
+    path = list()
+    visited = [False]*g.size
+    return dfs(g, u, v, path, visited)
+
+def is_simple_graph(g):
+    if any(g.matrix[i][i] != 0 for i in range(g.size)):
+        return False
+    return max(max(line) for line in g.matrix) == 1
+    
+def exist_elementary_chain(g,u,v):
+    if is_simple_graph(g):
+        print(f"an elementary chain exists between the vertices {u} and {v} as a consequence of the fact that g is a simple graph and that a chain exists between these vertices "if exists_chain(g, u, v) else "there is no chain between the vertices {u} and {v}")
+    else:
+        h = g
+        path = list()
+        print(f"an elementary chain exists between the vertices {u} and {v}" if dfs_elementary_matrix(h, u, v, path) else "there is no chain between the vertices {u} and {v}")
+
 def clear_screen():
-    if os.name == 'nts': 
+    if os.name == 'nt': 
         os.system('cls')
     else:
         os.system('clear')
@@ -23,17 +68,18 @@ def menu(g):
     while True:
         clear_screen()
         global flag
-        print('                          Menu                      ')
-        print('1.) Add edge........................................')
-        print('2.) vertex minimun and maximun degree......................')
-        print('3.) Visualize.......................................')
-        print('4.) Quit ...........................................')
+        print('                               Menu                              ')
+        print('1.) Add edge.....................................................')
+        print('2.) vertex minimun and maximun degree............................')
+        print('3.) Visualize....................................................')
+        print("4.) Check if there's a elementary chain between two vertices.......")
+        print('5.) Quit ........................................................')
         choice = int(input('Answer: '))
         if choice == 1:
             for i in range(g.size):
                 for j in range(g.size):
-                    n = int(input(f'Do vertices {i} and {j} are adjacents? 1/0 '))
-                    if n == 1:
+                    n = int(input(f'please enter the number of aretes between {i} and {j}, 0 if not adjacent: '))
+                    if n > 0:
                         g.add_edge(i,j)
                 flag = True
             input('press any key to continue...')
@@ -42,8 +88,8 @@ def menu(g):
                 print('please add edge first')
                 for i in range(g.size):
                     for j in range(g.size):
-                        n = int(input(f'Do vertices {i} and {j} are adjacents? 1/0 '))
-                        if n == 1:
+                        n = int(input(f'please enter the number of aretes between {i} and {j}, 0 if not adjacent: '))
+                        if n > 0:
                             g.add_edge(i,j)
             sums = [sum(ligne) for ligne in g.matrix]
             min_sum = min(sums)
@@ -72,8 +118,11 @@ def menu(g):
                 print('invalid input')
                 input('press any key to continue ...')
         elif choice == 4:
-            import sys
-            sys.exit()
+            u,v = map(int, input("Enter the two vertices seperate by a space (eg: 1 2)").split())
+            exists_elementary_chain(g, u, v)
+        elif choice == 5:
+            print("Exiting program...")
+            break
         else:
             print('invalid choice, please retry ...')
             input('press any key to continue ...')
